@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongodb';
 import SuperAdmin from '@/models/SuperAdmin';
+import User from '@/models/User';
 
 const JWT_SECRET = process.env.JWT_SECRET || "qreats_super_admin_secret_key_2026";
 
@@ -21,19 +22,40 @@ export async function POST(req) {
     // Connect to database
     await dbConnect();
 
-    // Find admin by email
-    const admin = await SuperAdmin.findOne({ email: email.toLowerCase() });
+    // First, try to find in SuperAdmin collection
+    let admin = await SuperAdmin.findOne({ email: email.toLowerCase() });
+    let isPasswordValid = false;
+    let isSuperAdmin = true;
+
+    if (admin) {
+      // Verify bcrypt password for SuperAdmin
+      isPasswordValid = await bcrypt.compare(password, admin.password);
+      console.log(`[SuperAdmin Login] Found in SuperAdmin collection`);
+    } else {
+      // Fallback: Check User collection (cafe owners) with plain text password
+      console.log(`[SuperAdmin Login] Not found in SuperAdmin, checking User collection...`);
+      const user = await User.findOne({ username: email });
+      
+      if (user && user.password === password) {
+        // Create admin object from user for consistency
+        admin = {
+          _id: user._id,
+          email: user.username,
+          name: user.cafeName || user.username,
+        };
+        isPasswordValid = true;
+        isSuperAdmin = false;
+        console.log(`[SuperAdmin Login] Found in User collection (cafe owner)`);
+      }
+    }
 
     if (!admin) {
-      console.log(`[SuperAdmin Login] Failed: Admin not found - ${email}`);
+      console.log(`[SuperAdmin Login] Failed: Account not found - ${email}`);
       return NextResponse.json(
         { message: 'Invalid credentials', success: false },
         { status: 401 }
       );
     }
-
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
 
     if (!isPasswordValid) {
       console.log(`[SuperAdmin Login] Failed: Invalid password for ${email}`);
@@ -49,13 +71,14 @@ export async function POST(req) {
         id: admin._id,
         email: admin.email,
         name: admin.name,
-        role: 'super_admin' 
+        role: 'super_admin',
+        source: isSuperAdmin ? 'superadmin' : 'user'
       },
       JWT_SECRET,
       { expiresIn: '1d' }
     );
 
-    console.log(`[SuperAdmin Login] Success: ${email}`);
+    console.log(`[SuperAdmin Login] Success: ${email} (source: ${isSuperAdmin ? 'SuperAdmin' : 'User'})`);
 
     const response = NextResponse.json(
       { 
