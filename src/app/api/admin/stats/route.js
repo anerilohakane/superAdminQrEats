@@ -5,7 +5,9 @@ import Cafe from '@/models/Cafe';
 
 export async function GET() {
   try {
+    console.log('[Stats API] Starting data fetch...');
     await dbConnect();
+    console.log('[Stats API] Database connected');
 
     // Fetch stats in parallel from both collections
     const [
@@ -28,9 +30,16 @@ export async function GET() {
       User.find().sort({ createdAt: -1 }).limit(5).lean()
     ]);
 
+    console.log('[Stats API] Cafe counts - Total:', localCafes, 'Pending:', pendingCafes, 'Approved:', approvedCafes);
+    console.log('[Stats API] User counts - Total:', totalUsers, 'Pending:', pendingUsers, 'Approved:', approvedUsers);
+    console.log('[Stats API] Recent cafes:', recentCafes.length);
+    console.log('[Stats API] Recent users:', recentUsers.length);
+
     const totalCafes = localCafes + totalUsers;
     const totalPending = pendingCafes + pendingUsers;
     const totalApproved = approvedCafes + approvedUsers;
+
+    console.log('[Stats API] Combined - Total:', totalCafes, 'Pending:', totalPending, 'Approved:', totalApproved);
 
     // Format recent requests (merge and sort)
     const formattedRecentUsers = recentUsers.map(user => ({
@@ -46,11 +55,13 @@ export async function GET() {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 5);
 
+    console.log('[Stats API] Recent requests:', recentRequests.length);
+
     // Simple revenue calculation logic (example: 5k per approved cafe)
     const estimatedRevenue = totalApproved * 5000;
     const formattedRevenue = `₹${(estimatedRevenue / 100000).toFixed(1)}L`;
 
-    return NextResponse.json({
+    const response = {
       success: true,
       data: {
         totalCafes,
@@ -59,7 +70,11 @@ export async function GET() {
         totalRevenue: formattedRevenue,
         recentRequests
       }
-    }, { status: 200 });
+    };
+
+    console.log('[Stats API] Sending response:', JSON.stringify(response));
+
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Fetch stats error:', error);
     return NextResponse.json({ success: false, message: 'Failed to fetch statistics' }, { status: 500 });
