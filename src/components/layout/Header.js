@@ -5,7 +5,7 @@ import { useSidebar } from "@/context/SidebarContext";
 
 export default function Header({ searchValue, setSearchValue }) {
   const { setSidebarOpen } = useSidebar();
-
+//sample
   return (
     <header className="sticky top-0 z-40 flex h-16 lg:h-[100px] items-center justify-between border-b border-slate-200/50 bg-white/80 px-6 backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-950/80 lg:px-10">
       <div className="flex items-center gap-4 lg:hidden">
