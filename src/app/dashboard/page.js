@@ -64,12 +64,13 @@ export default function DashboardOverview() {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="flex items-center justify-between">
+      {/* Welcome Section */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard Overview</h1>
           <p className="text-slate-500 dark:text-slate-400">Welcome back! Here's what's happening with QrEats today.</p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all">
+        <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all w-full sm:w-auto justify-center">
           Generate Report
           <ArrowUpRight size={16} />
         </button>

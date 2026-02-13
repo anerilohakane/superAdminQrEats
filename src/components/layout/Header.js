@@ -1,12 +1,21 @@
 "use client";
 
-import { Bell, Search, User } from "lucide-react";
+import { Bell, Search, User, Menu } from "lucide-react";
 
-export default function Header() {
+export default function Header({ setSidebarOpen }) {
   return (
-    <header className="flex h-[120px] items-center justify-between border-b border-slate-200 bg-white px-8 dark:border-slate-800 dark:bg-slate-950">
+    <header className="flex h-16 lg:h-[120px] items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-8 dark:border-slate-800 dark:bg-slate-950">
+      <div className="flex items-center gap-4 lg:hidden">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+        >
+          <Menu size={24} />
+        </button>
+      </div>
+
       {/* Search Bar */}
-      <div className="flex-1 max-w-md">
+      <div className="flex-1 max-w-md hidden sm:block ml-4 lg:ml-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -18,16 +27,16 @@ export default function Header() {
       </div>
 
       {/* Right Side Actions */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 lg:gap-4 ml-auto">
         <button className="relative flex h-10 w-10 items-center justify-center rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white">
           <Bell size={20} />
           <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full border-2 border-white bg-blue-600 dark:border-slate-950" />
         </button>
         
-        <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
+        <div className="h-8 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block" />
 
         <div className="flex items-center gap-3 pl-2">
-          <div className="text-right">
+          <div className="text-right hidden sm:block">
             <p className="text-sm font-semibold text-slate-900 dark:text-white">Aneri Lohakane</p>
             <p className="text-xs text-slate-500 dark:text-slate-400">Super Admin</p>
           </div>

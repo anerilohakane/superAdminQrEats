@@ -70,7 +70,7 @@ export default function AllCafes() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden dark:border-slate-800 dark:bg-slate-950">
+      <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden dark:border-slate-800 dark:bg-slate-950 overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/50 dark:border-slate-900 dark:bg-slate-900/50">
