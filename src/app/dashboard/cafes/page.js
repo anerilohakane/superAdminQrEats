@@ -22,13 +22,15 @@ const StatusBadge = ({ status }) => {
     pending: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800",
     approved: "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800",
     rejected: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800",
+    paused: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800",
   };
 
   return (
     <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide", styles[status])}>
       <span className={cn("h-1.5 w-1.5 rounded-full", 
         status === 'pending' ? 'bg-amber-500' : 
-        status === 'approved' ? 'bg-green-500' : 'bg-red-500'
+        status === 'approved' ? 'bg-green-500' : 
+        status === 'paused' ? 'bg-amber-500' : 'bg-red-500'
       )} />
       {status}
     </span>
@@ -107,6 +109,7 @@ export default function CafeApprovals() {
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
               <option value="approved">Approved</option>
+              <option value="paused">Paused</option>
               <option value="rejected">Rejected</option>
             </select>
           </div>
@@ -181,6 +184,24 @@ export default function CafeApprovals() {
                       </button>
                     </>
                   )}
+                  {cafe.status === 'approved' && (
+                    <button 
+                       onClick={() => handleStatusUpdate(cafe._id, 'paused')}
+                       className="flex h-11 items-center gap-2 rounded-2xl bg-amber-100 px-5 text-sm font-bold text-amber-700 shadow-lg shadow-amber-500/10 transition-all hover:bg-amber-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 dark:bg-amber-900/30 dark:text-amber-400 dark:shadow-none dark:hover:bg-amber-900/50"
+                    >
+                      {actionLoading === cafe._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <span className="text-lg">⏸</span>}
+                      Pause
+                    </button>
+                  )}
+                  {cafe.status === 'paused' && (
+                    <button 
+                       onClick={() => handleStatusUpdate(cafe._id, 'approved')}
+                       className="flex h-11 items-center gap-2 rounded-2xl bg-green-100 px-5 text-sm font-bold text-green-700 shadow-lg shadow-green-500/10 transition-all hover:bg-green-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 dark:bg-green-900/30 dark:text-green-400 dark:shadow-none dark:hover:bg-green-900/50"
+                    >
+                      {actionLoading === cafe._id ? <Loader2 className="h-4 w-4 animate-spin" /> : <span className="text-lg">▶</span>}
+                      Resume
+                    </button>
+                  )}
                   {cafe.status !== 'pending' && (
                     <button 
                        onClick={() => handleStatusUpdate(cafe._id, 'pending')}
@@ -189,9 +210,6 @@ export default function CafeApprovals() {
                       Reset Status
                     </button>
                   )}
-                  <button className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800">
-                    <MoreVertical size={20} />
-                  </button>
                 </div>
               </div>
             </div>

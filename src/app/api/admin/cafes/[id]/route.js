@@ -9,34 +9,38 @@ export async function PATCH(req, { params }) {
     const { status } = await req.json();
     const { id } = await params;
 
-    if (!['approved', 'rejected', 'pending'].includes(status)) {
+    if (!['approved', 'rejected', 'pending', 'paused'].includes(status)) {
       return NextResponse.json({ success: false, message: 'Invalid status' }, { status: 400 });
     }
 
-    let item;
+    // Use direct database access to bypass stale Mongoose schema validation
+    const { ObjectId } = (await import('mongodb'));
+    const conn = await dbConnect();
+    // Handle both Mongoose instance and Connection object
+    const db = conn.connection ? conn.connection.db : conn.db;
     
+    let item;
+
     // Try Cafe collection first
     console.log(`[PATCH] Attempting update: ID=${id}, Status=${status}`);
-    item = await Cafe.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true, runValidators: true }
+    const cafeResult = await db.collection('cafes').findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { status } },
+      { returnDocument: 'after' }
     );
+    item = cafeResult;
 
     if (item) {
       console.log(`[PATCH] Success: Updated Cafe record`);
     } else {
       console.log(`[PATCH] ID not found in Cafe collection, trying direct User collection update...`);
-      // Use direct collection access to bypass potential model mismatches
-      const { ObjectId } = (await import('mongodb'));
-      const db = (await dbConnect()).connection.db;
-      const result = await db.collection('users').findOneAndUpdate(
+      const userResult = await db.collection('users').findOneAndUpdate(
         { _id: new ObjectId(id) },
         { $set: { status } },
         { returnDocument: 'after' }
       );
       
-      item = result;
+      item = userResult;
       if (item) {
         console.log(`[PATCH] Success: Updated User via direct collection access: ${item.username || id}`);
       }

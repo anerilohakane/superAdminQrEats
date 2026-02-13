@@ -27,7 +27,7 @@ const CafeSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'approved', 'rejected'],
+    enum: ['pending', 'approved', 'rejected', 'paused'],
     default: 'pending',
   },
   createdAt: {
@@ -36,4 +36,5 @@ const CafeSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+delete mongoose.models.Cafe;
 export default mongoose.models.Cafe || mongoose.model('Cafe', CafeSchema);

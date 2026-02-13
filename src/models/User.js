@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'approved', 'rejected'],
+        enum: ['pending', 'approved', 'rejected', 'paused'],
         default: 'pending',
     },
     createdAt: {
@@ -31,4 +31,5 @@ const UserSchema = new mongoose.Schema({
     },
 });
 
+delete mongoose.models.User;
 export default mongoose.models.User || mongoose.model('User', UserSchema);
