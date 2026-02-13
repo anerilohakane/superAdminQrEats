@@ -1,6 +1,7 @@
 "use client";
 
 import { BarChart3, TrendingUp, Users, PieChart, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import Header from "@/components/layout/Header";
 
 const ChartPlaceholder = ({ title, height = "h-64" }) => (
   <div className="rounded-3xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-950">
@@ -27,9 +28,11 @@ const ChartPlaceholder = ({ title, height = "h-64" }) => (
 
 export default function AnalyticsPage() {
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Platform Analytics</h1>
+    <div className="flex flex-col gap-6">
+      <Header />
+      <div className="px-6 lg:px-10 pb-10 space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Platform Analytics</h1>
         <p className="text-slate-500 dark:text-slate-400">Deep dive into platform growth and user engagement.</p>
       </div>
 
@@ -80,6 +83,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <ChartPlaceholder title="Cafe Onboarding Growth" />
         <ChartPlaceholder title="Daily Active Sessions" />
+      </div>
       </div>
     </div>
   );

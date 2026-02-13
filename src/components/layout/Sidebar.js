@@ -1,144 +1,129 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
   Store, 
   Users, 
   Settings, 
-  BarChart3, 
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  ShieldCheck,
+  LogOut, 
+  ChevronLeft, 
+  Menu,
+  BarChart3,
+  Coffee,
   X
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/context/SidebarContext";
+import { useState } from "react";
 
-const menuItems = [
+const sidebarItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-  { icon: ShieldCheck, label: "Cafe Approvals", href: "/dashboard/cafes" },
+  { icon: Store, label: "Cafe Approvals", href: "/dashboard/cafes" },
   { icon: Store, label: "All Cafes", href: "/dashboard/all-cafes" },
   { icon: Users, label: "Owners", href: "/dashboard/owners" },
   { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
   { icon: Settings, label: "Site Settings", href: "/dashboard/settings" },
 ];
 
-export default function Sidebar({ mobileOpen, setMobileOpen }) {
+export default function Sidebar() {
   const pathname = usePathname();
+  const { sidebarOpen, setSidebarOpen } = useSidebar();
   const [collapsed, setCollapsed] = useState(false);
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname, setMobileOpen]);
-
-  // Close mobile menu on escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') setMobileOpen(false);
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [setMobileOpen]);
-
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   return (
     <>
       {/* Mobile Overlay */}
-      {mobileOpen && (
+      {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200 bg-white transition-all duration-300 dark:border-slate-800 dark:bg-slate-950",
+          "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200/50 bg-white/80 backdrop-blur-xl transition-all duration-300 dark:border-slate-800/50 dark:bg-slate-950/80",
           // Mobile: slide in from left
           "lg:relative lg:translate-x-0",
-          mobileOpen ? "translate-x-0" : "-translate-x-full",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
           // Desktop: collapsible width
-          collapsed ? "lg:w-20" : "lg:w-64",
+          collapsed ? "lg:w-20" : "lg:w-72",
           // Mobile: full width on small screens, fixed width on medium
-          "w-64 sm:w-72"
+          "w-72"
         )}
       >
-        {/* Sidebar Header */}
-        <div className="flex h-16 lg:h-[120px] items-center justify-between px-4 lg:px-6">
-          <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 font-bold text-white">
-              Q
+        {/* Header */}
+        <div className="flex h-16 lg:h-[100px] items-center justify-between px-6">
+          <div className={cn("flex items-center gap-3 overflow-hidden transition-all duration-300", collapsed && "lg:w-0 lg:opacity-0")}>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/30">
+              <span className="text-lg font-bold">Q</span>
             </div>
-            {!collapsed && (
-              <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                QrEats
-              </span>
-            )}
-          </Link>
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-slate-900 dark:text-white">QrEats</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Super Admin</span>
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => setCollapsed(!collapsed)}
+            className="hidden lg:flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white transition-colors"
+          >
+            <ChevronLeft size={16} className={cn("transition-transform duration-300", collapsed && "rotate-180")} />
+          </button>
 
-          {/* Mobile Close Button */}
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 lg:hidden"
+          <button 
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Desktop Toggle Button */}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3 top-16 lg:top-20 hidden lg:flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400 dark:hover:text-white"
-        >
-          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-        </button>
-
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors",
-                  isActive 
-                    ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" 
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"
-                )}
-              >
-                <item.icon size={20} className={cn("shrink-0", isActive ? "text-blue-600 dark:text-blue-400" : "text-slate-500")} />
-                {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
-                {isActive && !collapsed && (
-                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
-                )}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar">
+          <div className="space-y-1.5">
+            {sidebarItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "relative flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200 group",
+                    isActive 
+                      ? "bg-blue-50 text-blue-600 shadow-sm dark:bg-blue-900/20 dark:text-blue-400" 
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-900/50 dark:hover:text-white"
+                  )}
+                >
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full bg-blue-600 dark:bg-blue-400" />
+                  )}
+                  <item.icon size={22} className={cn("shrink-0 transition-transform group-hover:scale-110", isActive ? "text-blue-600 dark:text-blue-400" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200")} />
+                  {!collapsed && <span className="text-sm font-semibold tracking-wide">{item.label}</span>}
+                  
+                  {/* Tooltip for collapsed state */}
+                  {collapsed && (
+                    <div className="absolute left-full ml-4 hidden rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl lg:group-hover:block dark:bg-white dark:text-slate-900 z-50 whitespace-nowrap animate-in fade-in slide-in-from-left-2">
+                      {item.label}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </nav>
 
-        {/* Sidebar Footer */}
-        <div className="border-t border-slate-200 p-3 dark:border-slate-800">
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-slate-600 transition-colors hover:bg-red-50 hover:text-red-500 dark:text-slate-400 dark:hover:bg-red-900/10 dark:hover:text-red-400"
-          >
-            <LogOut size={20} className="shrink-0" />
-            {!collapsed && <span className="text-sm font-medium">Log out</span>}
+        {/* Footer */}
+        <div className="border-t border-slate-200/50 p-4 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm">
+          <button className={cn(
+            "flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all group dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400",
+            collapsed && "justify-center px-0"
+          )}>
+            <LogOut size={22} className="shrink-0 transition-transform group-hover:-translate-x-1" />
+            {!collapsed && <span className="text-sm font-semibold">Log out</span>}
           </button>
         </div>
       </aside>

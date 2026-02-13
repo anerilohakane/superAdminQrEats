@@ -1,21 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
+import { SidebarProvider } from "@/context/SidebarContext";
 
 export default function DashboardLayout({ children }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-black">
-      <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
-      <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-        <Header setSidebarOpen={setSidebarOpen} />
-        <main className="p-4 lg:p-8">
-          {children}
-        </main>
+    <SidebarProvider>
+      <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-black">
+        <Sidebar />
+        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+          {/* Header removed from here, added to individual pages */}
+          <main className="flex-1 w-full">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

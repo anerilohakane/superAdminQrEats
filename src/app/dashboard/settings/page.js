@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Settings, Shield, Bell, Globe, Save, Loader2 } from "lucide-react";
+import Header from "@/components/layout/Header";
 
 export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
@@ -12,7 +13,9 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="flex flex-col gap-6 max-w-4xl">
+      <Header />
+      <div className="px-6 lg:px-10 pb-10 space-y-8">
       <div className="flex items-flex-end justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Site Settings</h1>
@@ -95,6 +98,7 @@ export default function SettingsPage() {
             <button className="mt-4 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700">Enable Maintenance Mode</button>
           </div>
         </section>
+      </div>
       </div>
     </div>
   );
